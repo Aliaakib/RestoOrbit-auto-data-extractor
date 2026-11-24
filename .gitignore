@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Runtime storage / temp PDFs
+storage/
+logs/
+*.log
+*.pdf
+!tests/fixtures/*.pdf

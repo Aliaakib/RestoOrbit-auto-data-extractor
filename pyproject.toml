@@ -1,0 +1,16 @@
+[project]
+name = "auto-data-extractor"
+version = "1.0.0"
+description = "RestoOrbit Auto-Data-Extractor Microservice for automated email inbox PDF ingestion, selective report extraction, and shift entry auto-import."
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
