@@ -136,7 +136,8 @@ async def test_shift_importer_skips_submitted_shift_by_default():
 
     fake_cursor = MagicMock()
     fake_cursor.execute = AsyncMock()
-    fake_cursor.fetchone = AsyncMock(side_effect=[fake_store, fake_existing_shift])
+    fake_cursor.fetchall = AsyncMock(return_value=[fake_store])
+    fake_cursor.fetchone = AsyncMock(return_value=fake_existing_shift)
     fake_cursor.__aenter__ = AsyncMock(return_value=fake_cursor)
     fake_cursor.__aexit__ = AsyncMock(return_value=None)
 

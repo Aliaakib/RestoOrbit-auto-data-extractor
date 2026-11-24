@@ -2,13 +2,17 @@
 
 from fastapi import Depends, Header, Request
 
-from app.core.config import Settings, get_settings
+from app.core.config import Settings
 from app.core.exceptions import ForbiddenError, UnauthorizedError
 from app.core.security import AuthContext, decode_jwt_token, verify_service_key
 from app.db.pool import DatabasePool
 from app.services.email_ingestor import EmailIngestor
 from app.services.extraction_pipeline import ExtractionPipeline
 from app.services.scheduler import MailboxPollingScheduler
+
+
+def get_app_settings(request: Request) -> Settings:
+    return request.app.state.settings
 
 
 def get_db_pool(request: Request) -> DatabasePool:
@@ -30,7 +34,7 @@ def get_scheduler(request: Request) -> MailboxPollingScheduler:
 async def get_auth_context(
     authorization: str | None = Header(default=None),
     x_service_key: str | None = Header(default=None, alias="X-Service-Key"),
-    settings: Settings = Depends(get_settings),
+    settings: Settings = Depends(get_app_settings),
 ) -> AuthContext:
     """Authenticate caller via RestoOrbit JWT Bearer token or internal X-Service-Key."""
     if x_service_key:
