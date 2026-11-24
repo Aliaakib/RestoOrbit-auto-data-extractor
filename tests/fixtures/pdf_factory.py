@@ -94,8 +94,8 @@ def build_kitchen_speed_pdf() -> bytes:
     c.drawString(25, height - 50, "11/24/2026 1:34:43 PM (UTC-05:00) Eastern Time (US & Canada)")
     c.drawCentredString(width * 0.52, height - 50, "Tuesday, November 24, 2026")
 
-    cols_x = [105, 145, 190, 235, 280, 325, 380, 430, 480, 525, 580, 625, 670, 715, 755, 785]
-    headers = [
+    cols_x = [105, 145, 185, 225, 265, 310, 365, 415, 460, 505, 560, 605, 650, 695, 740, 780]
+    headers_line1 = [
         "Hour",
         "DT Chill",
         "DT Hot",
@@ -104,20 +104,26 @@ def build_kitchen_speed_pdf() -> bytes:
         "FC Chill",
         "FC/DT Fryer",
         "FC/DT OJ",
-        "Spare Queue",
+        "Spare",
         "FC Expo",
-        "Menu Item Header",
+        "Menu Item",
         "Spare 1",
         "Spare 2",
         "Spare 3",
         "Spare 4",
         "Average",
     ]
+    headers_line2 = {
+        8: "Queue",
+        10: "Header",
+    }
 
     y = height - 80
     c.setFont("Helvetica-Bold", 7)
-    for x, h in zip(cols_x, headers):
+    for idx, (x, h) in enumerate(zip(cols_x, headers_line1)):
         c.drawRightString(x, y, h)
+        if idx in headers_line2:
+            c.drawRightString(x, y - 9, headers_line2[idx])
 
     rows = [
         ("10:00 AM - 10:59 AM", "1:02:25", "0:00", "12:41", "37:39", "0:00", "43:23", "0:00", "0:00", "14:07", "0:00", "0:00", "0:00", "0:00", "0:00", "34:03"),
@@ -127,7 +133,7 @@ def build_kitchen_speed_pdf() -> bytes:
     ]
 
     c.setFont("Helvetica", 7.5)
-    y -= 16
+    y -= 22
     for row in rows:
         for x, val in zip(cols_x, row):
             c.drawRightString(x, y, val)

@@ -140,32 +140,41 @@ class KitchenSpeedExtractor(BaseReportExtractor):
         for line in doc.lines:
             lower = line.lower()
             if "dt expo" in lower and "dt chill" in lower:
-                # Re-verify order from known header tokens in appearance order
+                # Match full or wrapped line-1 header tokens (e.g. 'Spare\nQueue', 'Menu Item\nHeader')
                 known_headers = [
-                    ("DT Chill", "dt_chill"),
-                    ("DT Hot", "dt_hot"),
-                    ("DT Expo", "dt_expo"),
-                    ("FC Hot", "fc_hot"),
-                    ("FC Chill", "fc_chill"),
-                    ("FC/DT Fryer", "fc_dt_fryer"),
-                    ("FC/DT OJ", "fc_dt_oj"),
-                    ("Spare Queue", "spare_queue"),
-                    ("FC Expo", "fc_expo"),
-                    ("Menu Item Header", "menu_item_header"),
-                    ("Spare 1", "spare_1"),
-                    ("Spare 2", "spare_2"),
-                    ("Spare 3", "spare_3"),
-                    ("Spare 4", "spare_4"),
-                    ("Average", "average"),
+                    ("dt chill", "dt_chill"),
+                    ("dt hot", "dt_hot"),
+                    ("dt expo", "dt_expo"),
+                    ("fc hot", "fc_hot"),
+                    ("fc chill", "fc_chill"),
+                    ("fc/dt fryer", "fc_dt_fryer"),
+                    ("fc/dt oj", "fc_dt_oj"),
+                    ("spare queue", "spare_queue"),
+                    ("fc expo", "fc_expo"),
+                    ("menu item header", "menu_item_header"),
+                    ("menu item", "menu_item_header"),
+                    ("spare 1", "spare_1"),
+                    ("spare 2", "spare_2"),
+                    ("spare 3", "spare_3"),
+                    ("spare 4", "spare_4"),
+                    ("average", "average"),
                 ]
-                found = []
+                found_by_key: dict[str, int] = {}
                 for label, key in known_headers:
-                    pos = lower.find(label.lower())
+                    if key in found_by_key:
+                        continue
+                    pos = lower.find(label)
                     if pos != -1:
-                        found.append((pos, key))
-                if len(found) >= 5:
-                    found.sort(key=lambda item: item[0])
-                    col_order = [key for _, key in found]
+                        found_by_key[key] = pos
+                # Handle wrapped 'Spare\nQueue' where line 1 only contains 'spare' before 'fc expo'
+                if "spare_queue" not in found_by_key and "fc_expo" in found_by_key:
+                    spare_pos = lower.find("spare", 0, found_by_key["fc_expo"])
+                    if spare_pos != -1:
+                        found_by_key["spare_queue"] = spare_pos
+
+                if len(found_by_key) >= 14:
+                    ordered = sorted(found_by_key.items(), key=lambda item: item[1])
+                    col_order = [key for key, _ in ordered]
                 break
 
         for line in doc.lines:

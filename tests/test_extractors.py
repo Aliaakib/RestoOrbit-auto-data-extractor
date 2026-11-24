@@ -48,3 +48,5 @@ def test_kitchen_speed_pdf_extraction():
     assert result.extracted_data["dt_expo_average"]["minutes"] == 5
     assert result.extracted_data["dt_expo_average"]["seconds"] == 39
     assert len(result.extracted_data["hourly_rows"]) == 4
+    assert result.extracted_data["hourly_rows"][0]["fc_expo"] == "14:07"
+    assert result.extracted_data["hourly_rows"][0]["average"] == "34:03"
